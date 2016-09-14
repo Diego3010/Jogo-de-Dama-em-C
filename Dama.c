@@ -10,33 +10,35 @@
 char **initialize();
 void printmatriz (char **M);
 void printposicoes (char **M);
-int verificar_posicao (char **M, int lin, int col, char gamer);
+int verificar_posicao (char **M, int lin, int col, int lind, int cold, char gamer);
 int status(char **M);
 int statusgamer(char **M, char gamer);
 
 int main (void){
 
 	char **M, gamer= 'B';
-	int lin, col, jogoativo;
+	int lin, col, lind, cold, jogoativo = -1;
 
  	M = initialize();
  	printposicoes(M);
- 	printmatriz(M);
-
+ 	
  	while(jogoativo==-1){
         printmatriz(M);
-        printf("Caro jogador [%c] digite a linha:",gamer);
+        printf("Caro jogador [%c] digite a linha da peça que deseja mover:",gamer);
         scanf("%d",&lin);
-        printf("Caro jogador [%c] digite a coluna:",gamer);
+        printf("Caro jogador [%c] digite a coluna da peça que deseja mover:",gamer);
         scanf("%d",&col);
+        printf("Caro jogador [%c] digite a linha para onde deseja mover:",gamer);
+        scanf("%d",&lind);
+        printf("Caro jogador [%c] digite a coluna para onde deseja mover:",gamer);
+        scanf("%d",&cold);
 
         // se nao posso prosseguir
-        if( !step(M,lin, col, gamer) ){
-            printf("\njogada invalida !\n");
+        if( verificar_posicao(M,lin, col, lind, cold, gamer) == -1){
             continue;
         }
 
-        jogoativo = status(tabuleiro);
+        jogoativo = status(M);
 
         //alternancia de gamer
         if( gamer == 'P')
@@ -44,7 +46,6 @@ int main (void){
         else
             gamer = 'P';
     }
-}
 
 	return 0;
 }
@@ -116,38 +117,52 @@ void printmatriz (char **M){
 }
 
 //verifica se pode jogar naquela posicao
-int verificar_posicao (char **M, int lin, int col, char gamer){
+int verificar_posicao (char **M, int lin, int col, int lind, int cold, char gamer){
 
+    // P começa em cima e B em Baixo
+    if((lin + col) % 2 == 0 || (lind + cold) % 2 == 0){
+        printf("movimento invalido\n");
+        return -1;
+    }    
 
+    if(gamer == 'P'){
+        if(lin>lind){
+            printf("movimento invalido");
+            return -1;
+        }
+        else if(col!=cold + 1 || col!=cold - 1 || col!=cold + 2 || col!=cold - 2){
+            printf("movimento invalido");
+            return -1;
+        }
 
+    }
 }
 
 //verifica se continua ou para o jogo
 int status(char **M){
 
-
+    int i, j;
+    //ele esta verificando apenas uma posicao
+    for(i=0; i<N; i++){
+        for(j=0; j<N; j++){
+            if(M[i][j]== ' ' || M[i][j]== 'P' && M[i][j]!= 'B' ){
+                printf("As peças P ganharam\n");
+                return 2;
+            }
+            if(M[i][j]== ' ' || M[i][j]== 'B' && M[i][j]!= 'P' ){
+                printf("As peças B ganharam\n");
+                return 3;
+            }
+            else
+                return 1;
+        }
+    }
 
 }
 
 // verifica se ha um ganahdor
 int statusgamer(char **M, char gamer){
 
-	int i;
-    for(i=0;i<N;i++){
-        // verifica na linha
-        if(M[i][0]==gamer && M[i][1]==gamer && M[i][2]==gamer)
-            return 1;
-        // verica coluna
-        if(M[0][i]==gamer && M[1][i]==gamer && M[2][i]==gamer)
-            return 1;
-    }
-    // diagonal principal
-    if(M[0][0]==gamer && M[1][1]==gamer && M[2][2]==gamer)
-        return 1;
-
-    // diagonal secundaria
-    if(M[0][2]==gamer && M[1][1]==gamer && M[2][0]==gamer)
-        return 1;
-    return 0;
+	
 
 }
