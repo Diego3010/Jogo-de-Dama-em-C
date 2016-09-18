@@ -189,9 +189,10 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
                 printf("movimento invalido2\n");
                 return 1;
             }
-
         }
+
     }
+
 
     //andar e comer com a peça normal
     if(M[lin][col] == 'B' || M[lin][col] == 'P'){
@@ -214,10 +215,12 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
             M[lin][col] = ' ';
             M[lind][cold] = gamer;
         }
+
         else{
             printf("movimento invalido\n");
             return 1;
         }
+
     }
 
 
