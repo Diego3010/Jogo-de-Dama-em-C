@@ -1,4 +1,3 @@
-//Engenharia da Computacao
 //Gustavo Donnangelo Cassettari e Diego de Moraes Aguiar
 
 #include <stdio.h>
@@ -13,11 +12,12 @@ void printposicoes (char **M);
 int step (char **M, int lin, int col, int lind, int cold, char gamer);
 int status(char **M);
 int statusgamer(char **M, char gamer);
+int contador (char **M);
 
 int main (void){
 
 	system("color f0");
-	char **M, gamer = 'B';
+	char **M, gamer = 'b';
 	int lin, col, lind, cold, jogoativo = -1;
 
  	M = initialize();
@@ -53,10 +53,12 @@ int main (void){
         jogoativo = status(M);
 
         //Alternancia de gamer
-        if (gamer == 'P')
-            gamer = 'B';
+        if (gamer == 'p')
+            gamer = 'b';
         else
-            gamer = 'P';
+            gamer = 'p';
+
+        contador(M);
 
     }
 
@@ -110,7 +112,7 @@ void printposicoes (char **M){
 			j = 0;
 		while(j < 8){
 
-			M[i][j] = 'P';
+			M[i][j] = 'p';
 			j += 2;
 		}
 	}
@@ -121,10 +123,13 @@ void printposicoes (char **M){
 		else
 			j = 0;
 		while(j < 8){
-			M[i][j] = 'B';
+			M[i][j] = 'b';
 			j += 2;
 		}
 	}
+
+//	M[1][2] = 'P';
+//	M[0][3] = 'B';
 
 }
 
@@ -153,6 +158,8 @@ void printmatriz (char **M){
 
     }
 
+
+
 }
 
 //Verifica se pode jogar naquela posicao e movimentacao
@@ -162,20 +169,20 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
     int i;
 
     //definição do rivais
-    if(gamer == 'B'){
-        oposto = 'P';
-        Dg = 3;
-        Do = 5;
+    if(gamer == 'b'){
+        oposto = 'p';
+        Dg = 'B';
+        Do = 'P';
     }
 
     else{
-        oposto = 'B';
-        Dg = 5;
-        Do = 3;
+        oposto = 'b';
+        Dg = 'P';
+        Do = 'B';
     }
 
 
-    // P começa em cima e B em Baixo
+    // P começa em cima e b em Baixo
 
     //condição de posiveis locais de peças
     if((lin + col) % 2 == 0 || (lind + cold) % 2 == 0){
@@ -189,12 +196,18 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
         return 1;
     }
 
+    //nao deixa comer para fora do tabuleiro
+    if((lind == 0 || lind == 7) && (M[lind][cold] == oposto || M[lind][cold] == Do)){
+        printf("\t  Movimento invalido\n\n");
+        return 1;
+    }
+
     //gambs
-    else if(M[lin][col] == 3 || M[lin][col] == 5){
+    else if(M[lin][col] == 'B' || M[lin][col] == 'P'){
 
     //Movimento P apenas para frente
     }
-    else if(M[lin][col] == 'P'){
+    else if(M[lin][col] == 'p'){
 
             if(lin > lind){
                 printf("\t  Movimento invalido\n\n");
@@ -207,7 +220,7 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
     }
 
     //Movimento B apenas para frente
-    else if(M[lin][col] == 'B'){
+    else if(M[lin][col] == 'b'){
         if(lin < lind){
             printf("\t  Movimento invalido\n\n");
                 return 1;
@@ -220,33 +233,33 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
 
     //Andar e comer com a peça normal
 
-    if(M[lin][col] == 'B' || M[lin][col] == 'P'){
-        if(M[lin][col] == 'B' && M[lind][cold] == 'P' && M[lind - 1][cold - col + cold] == ' '){
+    if(M[lin][col] == 'b' || M[lin][col] == 'p'){
+        if(M[lin][col] == 'b' && M[lind][cold] == 'p' && M[lind - 1][cold - col + cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = ' ';
             M[lind - 1][cold - col + cold] = gamer;
         }
-        else if(M[lin][col] == 'P' && M[lind][cold] == 'B' && M[lind + 1][cold - col + cold] == ' '){
+        else if(M[lin][col] == 'p' && M[lind][cold] == 'b' && M[lind + 1][cold - col + cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = ' ';
             M[lind + 1][cold - col + cold] = gamer;
         }
-        else if(M[lin][col] == 'B' && M[lind][cold] == 5 && M[lind - 1][cold - col + cold] == ' '){
+        else if(M[lin][col] == 'b' && M[lind][cold] == 'P' && M[lind - 1][cold - col + cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = ' ';
             M[lind - 1][cold - col + cold] = gamer;
         }
-        else if(M[lin][col] == 'P' && M[lind][cold] == 3 && M[lind + 1][cold - col + cold] == ' '){
+        else if(M[lin][col] == 'p' && M[lind][cold] == 'B' && M[lind + 1][cold - col + cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = ' ';
             M[lind + 1][cold - col + cold] = gamer;
         }
 
-        else if(M[lin][col] == 'B' && (col==cold + 1 || col==cold - 1) && M[lind][cold] == ' '){
+        else if(M[lin][col] == 'b' && (col==cold + 1 || col==cold - 1) && M[lind][cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = gamer;
         }
-        else if(M[lin][col] == 'P' && (col==cold + 1 || col==cold - 1) && M[lind][cold] == ' '){
+        else if(M[lin][col] == 'p' && (col==cold + 1 || col==cold - 1) && M[lind][cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = gamer;
         }
@@ -262,35 +275,35 @@ int step (char **M, int lin, int col, int lind, int cold, char gamer){
 
     //Classificacao de Dama
     for(i = 0; i < 8; i++){
-        if(M[0][i] == 'B')
-            M[0][i] = 3;
-        if(M[7][i] == 'P')
-            M[7][i] = 5;
+        if(M[0][i] == 'b')
+            M[0][i] = 'B';
+        if(M[7][i] == 'p')
+            M[7][i] = 'P';
     }
     //Andando e comendo com a dama
-    if(M[lin][col] == 3 || M[lin][col] == 5){
+    if(M[lin][col] == 'B' || M[lin][col] == 'P'){
         if((cold != col + 1 && cold != col - 1) || (lind != lin + 1 && lind != lin - 1)){
             printf("\t  Movimento invalido\n\n");
             return 1;
         }
 
-        else if(M[lin][col] == 3 && (M[lind][cold] == 'P' || M[lind][cold] == 5) && M[lind - lin + lind][cold - col + cold] == ' '){
+        else if(M[lin][col] == 'B' && (M[lind][cold] == 'p' || M[lind][cold] == 'P') && M[lind - lin + lind][cold - col + cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = ' ';
-            M[lind - lin + lind][cold - col + cold] = 3;
+            M[lind - lin + lind][cold - col + cold] = 'B';
         }
-        else if(M[lin][col] == 5 && (M[lind][cold] == 'B' || M[lind][cold] == 3) && M[lind - lin + lind][cold - col + cold] == ' '){
+        else if(M[lin][col] == 'P' && (M[lind][cold] == 'b' || M[lind][cold] == 'B') && M[lind - lin + lind][cold - col + cold] == ' '){
             M[lin][col] = ' ';
             M[lind][cold] = ' ';
-            M[lind - lin + lind][cold - col + cold] = 5;
+            M[lind - lin + lind][cold - col + cold] = 'P';
         }
-        else if(M[lin][col] == 3 && M[lind][cold] == ' '){
+        else if(M[lin][col] == 'B' && M[lind][cold] == ' '){
                 M[lin][col] = ' ';
-                M[lind][cold] = 3;
+                M[lind][cold] = 'B';
         }
-        else if(M[lin][col] == 5 && M[lind][cold] == ' '){
+        else if(M[lin][col] == 'P' && M[lind][cold] == ' '){
                 M[lin][col] = ' ';
-                M[lind][cold] = 5;
+                M[lind][cold] = 'P';
         }
         else{
 
@@ -311,7 +324,7 @@ int status(char **M){
 
         for(j = 0; j<N; j++){
 
-            if(M[i][j]== 'B' || M[i][j]== 3){
+            if(M[i][j]== 'b' || M[i][j]== 'B'){
                    r = 1;
                     break;
             }
@@ -325,7 +338,7 @@ int status(char **M){
 
         for(j = 0; j < N; j++){
 
-            if(M[i][j]== 'P' || M[i][j]== 5){
+            if(M[i][j]== 'p' || M[i][j]== 'P'){
                     p = 1;
                     break;
             }
@@ -341,7 +354,7 @@ int status(char **M){
 
     else if (r == 1 && p == 0){
 
-        printf("\t  O jogador B ganhou\n");
+        printf(">>>>>>>>O jogador B ganhou<<<<<<<<\n\n");
 
         printmatriz(M);
 
@@ -349,11 +362,30 @@ int status(char **M){
     }
     else if (r == 0 && p == 1){
 
-        printf("\t  O jogador P ganhou\n");
+        printf(">>>>>>>O jogador P ganhou<<<<<<<\n\n");
 
         printmatriz(M);
 
         return 2;
     }
+
+}
+
+//conta a quantidade de peças no jogo
+int contador (char **M){
+
+    int i, j, B=0, P=0;
+
+    for(i=0; i<N; i++){
+        for(j=0; j<N; j++){
+            if(M[i][j] == 'b' || M[i][j] == 'B')
+                B++;
+            if(M[i][j] == 'p' || M[i][j] == 'P')
+                P++;
+        }
+    }
+
+    printf("Ainda tem %d peças B e ja foram comidas %d do jogador B.\n", B, 12-B);
+    printf("Ainda tem %d peças P e ja foram comidas %d do jogador P.\n\n\n\n", P, 12-P);
 
 }
